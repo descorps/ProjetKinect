@@ -68,9 +68,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\Kinect\CollisionTextLancer.cs" />
+    <Compile Include="Assets\Script\Kinect\Avatar.cs" />
+    <Compile Include="Assets\Script\Kinect\Bullet.cs" />
+    <Compile Include="Assets\Script\Kinect\GameManager.cs" />
     <Compile Include="Assets\Script\Kinect\KinectImgControllers\DisplayColor.cs" />
     <Compile Include="Assets\Script\Kinect\KinectImgControllers\DisplayDepth.cs" />
+    <Compile Include="Assets\Script\Kinect\KinectManager.cs" />
     <Compile Include="Assets\Script\Kinect\KinectModelControllers\KinectModelControllerV2.cs" />
     <Compile Include="Assets\Script\Kinect\KinectModelControllers\KinectPointController.cs" />
     <Compile Include="Assets\Script\Kinect\KinectWrapper\DepthWrapper.cs" />
@@ -80,6 +83,7 @@
     <Compile Include="Assets\Script\Kinect\KinectWrapper\KinectRecorder.cs" />
     <Compile Include="Assets\Script\Kinect\KinectWrapper\KinectSensor.cs" />
     <Compile Include="Assets\Script\Kinect\KinectWrapper\SkeletonWrapper.cs" />
+    <Compile Include="Assets\Script\Kinect\TriggerDetection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Asset\Shaders\Normal-Diffuse.shader" />
