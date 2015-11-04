@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour {
     /*  Gestion générale */
     /*********************/
 
+    private Canvas canvas;
+    public Canvas canvasPrefab;
+
     public static GameManager Instance {
         get;
         private set;
@@ -52,7 +55,8 @@ public class GameManager : MonoBehaviour {
     }
 
     void Start() {
-
+        canvas = Instantiate(canvasPrefab);
+        canvas.worldCamera = 
     }
 
     void Update() {
