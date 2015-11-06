@@ -56,11 +56,11 @@ public class TriggerDetection : MonoBehaviour {
         if (chrono > 2)
         {
             if (string.Compare(modeName, "LimitedTime") == 0)
-                GameManager.runLimitedTime();
+                GameManager.Instance.runLimitedTime();
             if (string.Compare(modeName, "LimitedLife") == 0)
-                GameManager.runLimitedLife();
+                GameManager.Instance.runLimitedLife();
             if (string.Compare(modeName, "Quit") == 0)
-                GameManager.quit();
+                GameManager.Instance.quit();
             chrono = 0;
         }
     }
