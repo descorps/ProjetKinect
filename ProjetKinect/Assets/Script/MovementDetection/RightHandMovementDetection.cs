@@ -49,12 +49,12 @@ public class RightHandMovementDetection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentSpeed.x < minSpeedXMvtRight && Math.Abs(currentSpeed.y) < maxSpeed && transform.position.x > minPositionXMvtRight)
+        if ((currentSpeed.x < minSpeedXMvtRight && Math.Abs(currentSpeed.y) < maxSpeed && transform.position.x > minPositionXMvtRight) || Input.GetAxis("HorizontalRightHand") > 0.5)
         {
             KinectManager.Instance.rightHandTowardRight();
             //Debug.Log("main droite vers la droite");
         }
-        if (currentSpeed.y < minSpeedYMvtUp && Math.Abs(currentSpeed.x) < maxSpeed && transform.position.y > minPositionYMvtUp)
+        if ((currentSpeed.y < minSpeedYMvtUp && Math.Abs(currentSpeed.x) < maxSpeed && transform.position.y > minPositionYMvtUp) || Input.GetAxis("VerticalRightHand") > 0.5)
         {
             KinectManager.Instance.rightHandTowardUp();
             // Debug.Log("main droite vers le haut");

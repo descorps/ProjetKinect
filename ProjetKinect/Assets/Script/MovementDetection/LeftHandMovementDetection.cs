@@ -47,12 +47,12 @@ public class LeftHandMovementDetection : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (currentSpeed.x > minSpeedXMvtLeft && Math.Abs(currentSpeed.y) < maxSpeed && transform.position.x < minPositionXMvtLeft)
+        if ((currentSpeed.x > minSpeedXMvtLeft && Math.Abs(currentSpeed.y) < maxSpeed && transform.position.x < minPositionXMvtLeft) || Input.GetAxis("HorizontalLeftHand") < -0.5)
         {
             KinectManager.Instance.leftHandTowardLeft();
             //Debug.Log("main gauche vers la gauche");
         }
-        if (currentSpeed.y < minSpeedYMvtUp && Math.Abs(currentSpeed.x) < maxSpeed && transform.position.y > minPositionYMvtUp)
+        if ((currentSpeed.y < minSpeedYMvtUp && Math.Abs(currentSpeed.x) < maxSpeed && transform.position.y > minPositionYMvtUp) || Input.GetAxis("VerticalLeftHand") > 0.5)
         {
             KinectManager.Instance.leftHandTowardUp();
             //Debug.Log("main gauche vers le haut");
