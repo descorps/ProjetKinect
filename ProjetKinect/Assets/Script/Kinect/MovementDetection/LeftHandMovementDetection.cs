@@ -50,7 +50,7 @@ public class LeftHandMovementDetection : MonoBehaviour {
         if (currentSpeed.x > minSpeedXMvtLeft && Math.Abs(currentSpeed.y) < maxSpeed && transform.position.x < minPositionXMvtLeft)
         {
             KinectManager.Instance.leftHandTowardLeft();
-            Debug.Log("main gauche vers la gauche");
+            //Debug.Log("main gauche vers la gauche");
         }
         if (currentSpeed.y < minSpeedYMvtUp && Math.Abs(currentSpeed.x) < maxSpeed && transform.position.y > minPositionYMvtUp)
         {
