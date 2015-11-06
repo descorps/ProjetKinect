@@ -40,8 +40,41 @@ public class KinectManager : MonoBehaviour {
     public enum Direction {
         Up, Left, Right
     };
+
+    private bool leftHandUp = false;
+    private bool rightHandUp = false;
+    private float chrono;
+
+    public void rightHandTowardUp()
+    {
+        if (leftHandUp)
+            sendPlayerMovementEvent(Direction.Up);
+        else
+            rightHandUp = true;
+    }
+
+    public void leftHandTowardUp()
+    {
+        if (rightHandUp)
+            sendPlayerMovementEvent(Direction.Up);
+        else
+            leftHandUp = true;
+    }
+
+    public void rightHandTowardRight()
+    {
+        sendPlayerMovementEvent(Direction.Right);
+    }
+
+    public void leftHandTowardLeft()
+    {
+        sendPlayerMovementEvent(Direction.Left);
+    }
+
+
     private void sendPlayerMovementEvent(Direction d) {
-        switch (d) {
+        switch (d)
+        {
             case Direction.Up:
                 if (onPlayerMovementUpEvent != null)
                     onPlayerMovementUpEvent();
@@ -63,7 +96,8 @@ public class KinectManager : MonoBehaviour {
     /****************************/
 
     public void Awake() {
-        if (Instance != null) {
+        if (Instance != null)
+        {
             Debug.LogError("There is multiple instance of singleton MovementManager");
             return;
         }
@@ -71,7 +105,6 @@ public class KinectManager : MonoBehaviour {
     }
 
     public void Start() {
-        // Not my problem
     }
 
     public void Update() {
@@ -79,5 +112,14 @@ public class KinectManager : MonoBehaviour {
 
         // Pour indiquer que vous frappez dans une direction : 
         // sendPlayerMovementEvent(Direction.Left)
+
+        if ((leftHandUp || rightHandUp) && chrono < 1)
+            chrono += Time.deltaTime;
+        else
+        {
+            rightHandUp = false;
+            leftHandUp = false;
+            chrono = 0;
+        }
     }
 }

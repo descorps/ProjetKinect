@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\Kinect\AttachedKinectManager.cs" />
     <Compile Include="Assets\Script\Kinect\Avatar.cs" />
     <Compile Include="Assets\Script\Kinect\Bullet.cs" />
     <Compile Include="Assets\Script\Kinect\GameManager.cs" />
@@ -83,6 +84,8 @@
     <Compile Include="Assets\Script\Kinect\KinectWrapper\KinectRecorder.cs" />
     <Compile Include="Assets\Script\Kinect\KinectWrapper\KinectSensor.cs" />
     <Compile Include="Assets\Script\Kinect\KinectWrapper\SkeletonWrapper.cs" />
+    <Compile Include="Assets\Script\Kinect\MovementDetection\LeftHandMovementDetection.cs" />
+    <Compile Include="Assets\Script\Kinect\MovementDetection\RightHandMovementDetection.cs" />
     <Compile Include="Assets\Script\Kinect\TriggerDetection.cs" />
   </ItemGroup>
   <ItemGroup>
