@@ -29,6 +29,17 @@ public class GameManager : MonoBehaviour {
         private set;
     }
 
+    public enum Mode
+    {
+        Menu, TimeLimited, LifeLimited
+    }
+
+    public Mode currentMode
+    {
+        get;
+        private set;
+    }
+
     /****************************/
     /*  Fonctions pour Unity3D  */
     /****************************/
@@ -99,6 +110,20 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    public int points
+    {
+        get;
+        private set;
+    }
 
+    public void addPoints()
+    {
+        points++;
+    }
+
+    public void hit()
+    {
+        points--;
+    }
 
 }

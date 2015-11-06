@@ -5,6 +5,27 @@ using System;
 
 public class LeftHandMovementDetection : MonoBehaviour {
 
+    // Vitesse minimale pour la détection du mouvement vers la gauche
+    [SerializeField]
+    private float minSpeedXMvtLeft = 1.5f;
+
+    // Vitesse minimale pour la détection du mouvement vers le haut
+    [SerializeField]
+    private float minSpeedYMvtUp = -1;
+
+    // Vitesse max que peut prendre la main dans les directions non voulues pendant le mouvement vers la gauche
+    [SerializeField]
+    private float maxSpeed = 0.6f;
+
+    // Position minimal délimitant la zone de détection de la main durant le mouvement vers la gauche
+    [SerializeField]
+    private float minPositionXMvtLeft = -0.3f;
+
+    // Position minimal délimitant la zone de détection de la main durant le mouvement vers le haut
+    [SerializeField]
+    private float minPositionYMvtUp = 1;
+
+
     private Vector3 previousPosition;
     private Vector3 currentSpeed;
 
@@ -26,12 +47,12 @@ public class LeftHandMovementDetection : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (currentSpeed.x > 1.5 && Math.Abs(currentSpeed.y) < 0.5 && transform.position.x < -0.3)
+        if (currentSpeed.x > minSpeedXMvtLeft && Math.Abs(currentSpeed.y) < maxSpeed && transform.position.x < minPositionXMvtLeft)
         {
             KinectManager.Instance.leftHandTowardLeft();
-            //Debug.Log("main gauche vers la gauche");
+            Debug.Log("main gauche vers la gauche");
         }
-        if (currentSpeed.y < -1.5 && Math.Abs(currentSpeed.x) < 0.7 && transform.position.y > 1)
+        if (currentSpeed.y < minSpeedYMvtUp && Math.Abs(currentSpeed.x) < maxSpeed && transform.position.y > minPositionYMvtUp)
         {
             KinectManager.Instance.leftHandTowardUp();
             //Debug.Log("main gauche vers le haut");

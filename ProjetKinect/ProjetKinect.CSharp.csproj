@@ -87,6 +87,7 @@
     <Compile Include="Assets\Script\Kinect\MovementDetection\LeftHandMovementDetection.cs" />
     <Compile Include="Assets\Script\Kinect\MovementDetection\RightHandMovementDetection.cs" />
     <Compile Include="Assets\Script\Kinect\TriggerDetection.cs" />
+    <Compile Include="Assets\Script\Kinect\UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Asset\Shaders\Normal-Diffuse.shader" />

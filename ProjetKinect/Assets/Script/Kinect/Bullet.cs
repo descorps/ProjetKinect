@@ -13,14 +13,19 @@ public class Bullet : MonoBehaviour {
     [SerializeField]
     private float speed = 1f;
 
+    [SerializeField]
+    private float z_hit = 10f;
+
+    [SerializeField]
+    private float z_lost = 0f;
+    
+
     private bool initialized = false;
     
-    Avatar player;
-
 
     void onDirection() {
-        if (initialized && (player.transform.position - transform.position).magnitude < player.hitRange) {
-            player.addPoints();
+        if (initialized && transform.position.z < z_hit) {
+            //GameManager.Instance.addPoints();
             // On sort une animation jolie
             Destroy(gameObject);
         }
@@ -30,17 +35,15 @@ public class Bullet : MonoBehaviour {
         if (GameManager.Instance == null) {
             Debug.LogError("GameManager was not created");
         }
-        if (GameManager.Instance.Player == null) {
-            Debug.LogError("Player was not initialized in GameManager");
-        }
-        player = GameManager.Instance.Player;
     }
 
     public void init(KinectManager.Direction d, Vector3 position) {
         if (initialized == false)
             return;
-        if (KinectManager.Instance == null)
+        if (KinectManager.Instance == null) {
             Debug.LogError("MovementManager wasn't initialized");
+            return;
+        }
         else {
             transform.position = position;
             switch (d) {
@@ -60,15 +63,16 @@ public class Bullet : MonoBehaviour {
 
     void Update() {
         if (initialized) {
-            Vector3 v = player.transform.position - transform.position;
-
-            if (player.hitBoxRadius > v.magnitude) {//Calcul de distance inférieur à la hitbox du joueur
-                player.hit();
+            if (transform.position.z < z_hit) {
+                GetComponent<Renderer>().material.color = Color.red;
+            }
+            if (transform.position.z < z_lost) {//Calcul de distance inférieur à la hitbox du joueur
+                GameManager.Instance.hit();
                 // On sort une animation moche
                 Destroy(gameObject);
             }
             else {
-                transform.Translate(v.normalized);
+                transform.Translate(new Vector3(0,0,-speed));
             }
         }
     }
