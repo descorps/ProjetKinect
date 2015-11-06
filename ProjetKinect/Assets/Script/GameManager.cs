@@ -19,6 +19,12 @@ public class GameManager : MonoBehaviour {
     private Canvas canvas;
     public Canvas canvasPrefab;
 
+    private KinectSensor kinect;
+    public KinectSensor kinectPrefab;
+
+    private KinectPointController kinectPointController;
+    public KinectPointController kinectPointControllerPrefab;
+
     public static GameManager Instance {
         get;
         private set;
@@ -43,6 +49,8 @@ public class GameManager : MonoBehaviour {
     /****************************/
     /*  Fonctions pour Unity3D  */
     /****************************/
+
+    
 
     void Awake() {
         if (Instance != null) {
@@ -83,7 +91,11 @@ public class GameManager : MonoBehaviour {
     }
 
     void Start() {
-        if(Application.loadedLevel == 0)
+
+        kinect = Instantiate(kinectPrefab);
+        kinectPointController = Instantiate(kinectPointControllerPrefab);
+
+        if (Application.loadedLevel == 0)
         {
             canvas = Instantiate(canvasPrefab);
             canvas.worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -96,6 +108,8 @@ public class GameManager : MonoBehaviour {
         {
 
         }
+
+
         if(KinectManager.Instance == null)
         {
             Debug.Log("no instance of KinectManager");

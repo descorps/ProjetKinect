@@ -137,7 +137,6 @@ public class KinectSensor : MonoBehaviour, KinectInterface {
 			long kinectAngle = (long)(theta * (180 / Mathf.PI));
 			NativeMethods.NuiCameraSetAngle(kinectAngle);
 			
-			DontDestroyOnLoad(gameObject);
 			KinectSensor.Instance = this;
 			NativeMethods.NuiSetDeviceStatusCallback(new NuiStatusProc(), IntPtr.Zero);
 		}
