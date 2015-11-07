@@ -2,19 +2,91 @@
 using System.Collections;
 
 
-
-/*************************/
-/*                       */
-/*      GameManager      */
-/*                       */
-/*************************/
-
+/** \file GameManager.cs
+ */
 
 public class GameManager : MonoBehaviour {
 
-    /*********************/
-    /*  Gestion générale */
-    /*********************/
+
+    /***********************/
+    /*  Gestion singleton  */
+    /***********************/
+
+    public static GameManager Instance {    /** Référence vers l'instance du singleton */
+        get;
+        private set;
+    }
+    /** \brief Fonction Awake pour Unity3D, gère le singleton */
+    void Awake() {
+        if (Instance != null) {         // Si l'instance existe déjà, erreur
+            Debug.LogError("There is multiple instance of singleton GameManager2");
+            return;
+        }
+        Instance = this;
+    }
+
+
+    /******************/
+    /*  Enumérations  */
+    /******************/
+
+    public enum Mode {                          /** Modes de fonctionnement de l'application */
+        Init, Menu, TimeLimited, LifeLimited, Quit
+    }
+
+
+    /****************/
+    /*  Paramètres  */
+    /****************/
+
+    [SerializeField]
+    Vector3 leftStartPosition;                  /** Position de départ des Bullet correspondant au mouvement vers la gauche */
+    [SerializeField]
+    Vector3 rightStartPosition;                 /** Position de départ des Bullet correspondant au mouvement vers la droite */
+    [SerializeField]
+    Vector3 upStartPosition;                    /** Position de départ des Bullet correspondant au mouvement vers le haut (y compris Bonus) */
+    [SerializeField]
+    Vector3 downStartPosition;                  /** Position de départ des Bullet correspondant au mouvement vers le bas (Bonus) */
+    [SerializeField]
+    private float minDeltaTimeBetweenTwoBullet; /** Durée min entre deux apparitions de Bullet */
+    [SerializeField]
+    private float maxDeltaTimeBetweenTwoBullet; /** Durée max entre deux apparitions de Bullet */
+    [SerializeField]
+    private float bonusRatio;                   /** Ratio de Bonus parmi les Bullets */
+    [SerializeField]
+    private float limitedTimeDuration = 60;     /** Temps de base d'une partie en temps limité */
+    [SerializeField]
+    private int scoreBonus;
+    [SerializeField]
+    private int lifeBonus;
+    [SerializeField]
+    private float timeBonus;
+    [SerializeField]
+    private int maxLife;
+
+
+    /***********************************/
+    /*  Variables de gestion générale  */
+    /***********************************/
+
+    public Mode currentMode {                   /** Mode de fonctionnement actuel */
+        get;
+        private set;
+    }
+    public int score {                          /** Score du joueur */
+        get;
+        private set;
+    }
+    public int life {                           /** Vie du joueur */
+        get;
+        private set;
+    }
+
+
+    /**********************************/
+    /*  Variables de gestion interne  */
+    /**********************************/
+
     private Camera cam;
 
     private Canvas canvas;
@@ -26,54 +98,171 @@ public class GameManager : MonoBehaviour {
     private KinectPointController kinectPointController;
     public KinectPointController kinectPointControllerPrefab;
 
-    public static GameManager Instance {
-        get;
-        private set;
+    float timeBeginGame;                        // Pour la gestion de la partie en temps limité
+    float timeEndGame;                          // Pour la gestion de la partie en temps limité
+    private float nextBulletTime = 0;                     // Instant où l'on pourra faire spawn une nouvelle Bullet
+
+
+    /**************************************/
+    /*  Accesseur de l'état de la partie  */
+    /**************************************/
+
+    public float getLimitedTimeDuration {       /** Accesseurs pour la durée de fin de la partie */
+        get { return timeEndGame - timeBeginGame; }
     }
-
-    public enum Mode
-    {
-        Menu, TimeLimited, LifeLimited
+    public float getTimer {
+        get {  return timeEndGame - Time.time; }
     }
-
-    public Mode currentMode
-    {
-        get;
-        private set;
+    public float getCurrentTime {               /** Accesseurs pour la durée actuelle de la partie */
+        get { return Time.time - timeBeginGame; }
     }
-
-    [SerializeField]
-    Vector3 leftStartPosition;
-
-    [SerializeField]
-    Vector3 rightStartPosition;
-
-    [SerializeField]
-    Vector3 upStartPosition;
+    public int difficultylvl { get; private set; }
 
 
     /****************************/
     /*  Fonctions pour Unity3D  */
     /****************************/
 
-    void Awake() {
-        if (Instance != null) {
-            Debug.LogError("There is multiple instance of singleton GameManager2");
-            return;
-        }
-        Instance = this;
+    // ------------------------ Start ------------------------ //
+    void Start()
+    {
+        GoBackToMenu();
+
+        kinect = Instantiate(kinectPrefab);
+        kinectPointController = Instantiate(kinectPointControllerPrefab);
+        
+        KinectManager.Instance.onPlayerMovementRightEvent += displayTextRight;
+        KinectManager.Instance.onPlayerMovementLeftEvent += displayTextLeft;
+        KinectManager.Instance.onPlayerMovementUpEvent += displayTextUp;
+
     }
 
-    public void runLimitedTime()
-    {
+
+    // ------------------------ Update ------------------------ //
+    void Update() {
+        if (currentMode == Mode.TimeLimited || currentMode == Mode.LifeLimited) {
+            // Spawn des trucs
+            float t = Time.time;
+            if (t > nextBulletTime) {
+                int side = (int) Random.Range(0, 3f + 3 * bonusRatio);
+                Bullet bullet = BulletFactory.getBullet();
+                switch (side) {
+                    case 0:
+                        bullet.Position = leftStartPosition;
+                        bullet.init(KinectManager.Direction.Left);
+                        break;
+                    case 1:
+                        bullet.Position = rightStartPosition;
+                        bullet.init(KinectManager.Direction.Right);
+                        break;
+                    case 2:
+                        bullet.Position = upStartPosition;
+                        bullet.init(KinectManager.Direction.Up);
+                        break;
+                    default:
+                        float typeBonus = Random.Range(0, 1);
+                        if (typeBonus < 0.5) {
+                            bullet.Position = upStartPosition;
+                            bullet.init(KinectManager.Direction.BonusUp);
+                        }
+                        else {
+                            bullet.Position = downStartPosition;
+                            bullet.init(KinectManager.Direction.BonusDown);
+                        }
+                        break;
+                }
+                nextBulletTime = t + Random.Range(minDeltaTimeBetweenTwoBullet, maxDeltaTimeBetweenTwoBullet);
+            }
+        }
+        if (currentMode == Mode.LifeLimited) {
+            // Condition de fin
+            if (life <= 0)
+                GoBackToMenu();
+        }
+        else if (currentMode == Mode.TimeLimited) {
+            // Condition de fin
+            if (Time.time > timeEndGame)
+                GoBackToMenu();
+
+            // Condition de passage de niveau
+            if (Time.time > timeEndGame)
+                nextLevel();
+        }
+
+        if(Input.GetKey(KeyCode.Escape))
+        {
+            GoBackToMenu();
+        }
+    }
+
+
+    /********************************/
+    /*  Méthodes de gestion du jeu  */
+    /********************************/
+
+    public void miss(KinectManager.Direction d) {
+        if (d == KinectManager.Direction.Left || d == KinectManager.Direction.Right || d == KinectManager.Direction.Up) {
+            if (currentMode == Mode.LifeLimited)
+                life--;
+            else if (currentMode == Mode.TimeLimited)
+                score--;
+        }
+    }
+
+    public void hit(KinectManager.Direction d) {
+        if (d == KinectManager.Direction.Left || d == KinectManager.Direction.Right || d == KinectManager.Direction.Up) {
+            score++;
+        }
+        else if (d == KinectManager.Direction.BonusDown) {
+            if (currentMode == Mode.LifeLimited)
+                life += lifeBonus;
+            if (currentMode == Mode.TimeLimited)
+                timeEndGame += timeBonus;
+        }
+        else if (d == KinectManager.Direction.BonusUp) {
+            score += scoreBonus;
+        }
+    }
+
+    public void runLimitedTime() {
+        score = 0;
+        timeBeginGame = Time.time;
+        timeEndGame = Time.time + limitedTimeDuration;
+        nextBulletTime = Time.time;
+        currentMode = Mode.TimeLimited;
         Application.LoadLevel("LimitedTime");
         Debug.Log("run limited time");
     }
-    public void runLimitedLife()
-    {
+    public void runLimitedLife() {
+        life = maxLife;
+        difficultylvl = 1;
+        score = 0;
+        timeBeginGame = Time.time;
+        timeEndGame = Time.time + limitedTimeDuration;
+        nextBulletTime = Time.time;
+        currentMode = Mode.LifeLimited;
         Application.LoadLevel("LimitedLife");
         Debug.Log("run limited life");
     }
+
+    public void nextLevel() {
+        difficultylvl++;
+        // Effets peut être à modifier
+        minDeltaTimeBetweenTwoBullet *= 0.9f;
+        maxDeltaTimeBetweenTwoBullet *= 0.9f;
+        Bullet.modifySpeed(1.1f);
+    }
+
+    public void GoBackToMenu() {
+        Application.LoadLevel("MainMenu");
+        currentMode = Mode.Menu;
+    }
+
+    /*********************/
+    /*  Autres méthodes  */
+    /*********************/
+
+
     public void quit()
     {
         Debug.Log("quit");
@@ -92,106 +281,6 @@ public class GameManager : MonoBehaviour {
     public void displayTextRight()
     {
         Debug.Log("eventRight");
-    }
-
-    void Start() {
-        cam = GameObject.Find("Main Camera").GetComponent<Camera>();
-
-        kinect = Instantiate(kinectPrefab);
-        kinectPointController = Instantiate(kinectPointControllerPrefab);
-
-        if (Application.loadedLevel == 0)
-        {
-            canvas = Instantiate(canvasPrefab);
-            canvas.worldCamera = cam;
-        }
-        else if (Application.loadedLevel == 1)  // LimitedLife
-        {
-
-        }
-        else if (Application.loadedLevel == 2)  // LimitedTime
-        {
-
-        }
-
-
-        if(KinectManager.Instance == null)
-        {
-            Debug.Log("no instance of KinectManager");
-        }
-        KinectManager.Instance.onPlayerMovementRightEvent += displayTextRight;
-        KinectManager.Instance.onPlayerMovementLeftEvent += displayTextLeft;
-        KinectManager.Instance.onPlayerMovementUpEvent += displayTextUp;
-    }
-
-    [SerializeField]
-    private float minDeltaTimeBetweenTwoBullet;
-    [SerializeField]
-    private float maxDeltaTimeBetweenTwoBullet;
-    [SerializeField]
-    private float bonusRatio;
-
-    private float next = 0;
-
-    void Update()
-    {
-        if (Application.loadedLevel != 0)
-        {
-            if (Input.GetKeyDown("a"))
-                Application.LoadLevel(0);
-
-            cam.orthographic = false;
-            // Spawn des trucs
-            float t = Time.time;
-            if (t > next)
-            {
-                int side = (int)Random.Range(0, 3f + 3 * bonusRatio);
-                Bullet bullet = BulletFactory.getBullet();
-                switch (side)
-                {
-                    case 0:
-                        bullet.Position = leftStartPosition;
-                        bullet.init(KinectManager.Direction.Left);
-                        break;
-                    case 1:
-                        bullet.Position = rightStartPosition;
-                        bullet.init(KinectManager.Direction.Right);
-                        break;
-                    case 2:
-                        bullet.Position = upStartPosition;
-                        bullet.init(KinectManager.Direction.Up);
-                        break;
-                    default:
-                        float typeBonus = Random.Range(0, 1);
-                        if (typeBonus < 0.5)
-                        {
-                            // Bonus en haut
-                        }
-                        else
-                        {
-                            // Bonus en bas
-                        }
-                        break;
-                }
-                next = t + Random.Range(minDeltaTimeBetweenTwoBullet, maxDeltaTimeBetweenTwoBullet);
-            }
-        }
-    }
-
-    public int points
-    {
-        get;
-        private set;
-    }
-
-    public void hit(KinectManager.Direction d)
-    {
-        points++;
-    }
-
-    public void miss(KinectManager.Direction d)
-    {
-        points--;
     }
 
 }
