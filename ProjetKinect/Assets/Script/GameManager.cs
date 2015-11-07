@@ -160,8 +160,9 @@ public class GameManager : MonoBehaviour {
                         bullet.init(KinectManager.Direction.Up);
                         break;
                     default:
-                        float typeBonus = Random.Range(0, 1);
-                        if (typeBonus < 0.5) {
+                        float typeBonus = Random.Range(0.0f, 1.0f);
+                        Debug.Log(typeBonus);
+                        if (typeBonus > 0.5) {
                             bullet.Position = upStartPosition;
                             bullet.init(KinectManager.Direction.BonusUp);
                         }
@@ -265,6 +266,7 @@ public class GameManager : MonoBehaviour {
 
     public void quit()
     {
+        Application.Quit();
         Debug.Log("quit");
     }
 
