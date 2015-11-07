@@ -72,6 +72,16 @@ public class KinectManager : MonoBehaviour {
         sendPlayerMovementEvent(Direction.Left);
     }
 
+    public void postureBonusUp()
+    {
+        sendPlayerMovementEvent(Direction.BonusUp);
+    }
+
+    public void postureBonusDown()
+    {
+        sendPlayerMovementEvent(Direction.BonusDown);
+    }
+
     /** \brief Fonction factorisant l'envoi d'événements aux bullets concernés lors d'un mouvement significatif du joueur
      *  \param d : Mouvement effectué
      */

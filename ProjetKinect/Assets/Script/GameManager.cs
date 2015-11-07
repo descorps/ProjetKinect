@@ -137,6 +137,9 @@ public class GameManager : MonoBehaviour {
     {
         if (Application.loadedLevel != 0)
         {
+            if (Input.GetKeyDown("a"))
+                Application.LoadLevel(0);
+
             cam.orthographic = false;
             // Spawn des trucs
             float t = Time.time;
