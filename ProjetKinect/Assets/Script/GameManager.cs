@@ -199,8 +199,10 @@ public class GameManager : MonoBehaviour {
                 GoBackToMenu();
 
             // Condition de passage de niveau
-            if (Time.time > timeEndGame)
+            if (Time.time > timeEndGame) {
                 nextLevel();
+                timeEndGame += limitedTimeDuration; // Pour le prochain passage de niveau
+            }
         }
 
         if(Input.GetKey(KeyCode.Escape))
