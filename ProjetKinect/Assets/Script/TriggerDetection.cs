@@ -4,7 +4,7 @@ using System.Collections;
 public class TriggerDetection : MonoBehaviour {
 
     [SerializeField]
-    private string modeName;
+    private GameManager.Mode modeName;
     [SerializeField]
     private string modeKey;
 
@@ -55,11 +55,11 @@ public class TriggerDetection : MonoBehaviour {
 
         if (chrono > 2)
         {
-            if (string.Compare(modeName, "LimitedTime") == 0)
+            if (modeName == GameManager.Mode.TimeLimited)
                 GameManager.Instance.runLimitedTime();
-            if (string.Compare(modeName, "LimitedLife") == 0)
+            if (modeName == GameManager.Mode.LifeLimited)
                 GameManager.Instance.runLimitedLife();
-            if (string.Compare(modeName, "Quit") == 0)
+            if (modeName == GameManager.Mode.Quit)
                 GameManager.Instance.quit();
             chrono = 0;
         }

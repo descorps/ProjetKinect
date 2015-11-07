@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
     /******************/
 
     public enum Mode {                          /** Modes de fonctionnement de l'application */
-        Menu, TimeLimited, LifeLimited
+        Init, Menu, TimeLimited, LifeLimited, Quit
     }
 
 
@@ -124,39 +124,23 @@ public class GameManager : MonoBehaviour {
     /****************************/
 
     // ------------------------ Start ------------------------ //
-    void Start() {
-        cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+    void Start()
+    {
+        GoBackToMenu();
 
         kinect = Instantiate(kinectPrefab);
         kinectPointController = Instantiate(kinectPointControllerPrefab);
-
-        if (Application.loadedLevel == 0) {
-            canvas = Instantiate(canvasPrefab);
-            canvas.worldCamera = cam;
-        }
-        else if (Application.loadedLevel == 1)  // LimitedLife
-        {
-
-        }
-        else if (Application.loadedLevel == 2)  // LimitedTime
-        {
-
-        }
-
-
-        if (KinectManager.Instance == null) {
-            Debug.Log("no instance of KinectManager");
-        }
+        
         KinectManager.Instance.onPlayerMovementRightEvent += displayTextRight;
         KinectManager.Instance.onPlayerMovementLeftEvent += displayTextLeft;
         KinectManager.Instance.onPlayerMovementUpEvent += displayTextUp;
+
     }
 
 
     // ------------------------ Update ------------------------ //
     void Update() {
-        if (Application.loadedLevel != 0) {
-            cam.orthographic = false;
+        if (currentMode == Mode.TimeLimited || currentMode == Mode.LifeLimited) {
             // Spawn des trucs
             float t = Time.time;
             if (t > nextBulletTime) {
@@ -204,6 +188,11 @@ public class GameManager : MonoBehaviour {
             if (Time.time > timeEndGame)
                 nextLevel();
         }
+
+        if(Input.GetKey(KeyCode.Escape))
+        {
+            GoBackToMenu();
+        }
     }
 
 
@@ -245,7 +234,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log("run limited time");
     }
     public void runLimitedLife() {
-        life = 0;
+        life = maxLife;
         difficultylvl = 1;
         score = 0;
         timeBeginGame = Time.time;
@@ -265,7 +254,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void GoBackToMenu() {
-        Application.LoadLevel(0);
+        Application.LoadLevel("MainMenu");
         currentMode = Mode.Menu;
     }
 
