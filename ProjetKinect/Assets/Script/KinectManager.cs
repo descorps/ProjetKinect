@@ -2,11 +2,9 @@
 using System.Collections;
 
 
-/************************************************/
-/*                                              */
-/*      Gestionnaire de mouvements Kinect       */
-/*                                              */
-/************************************************/
+/** \file KinectManager.cs
+ * \brief Classe intermédiaire pour interfacer la gestion des mouvements du joueur avec le jeu
+ */
 
 
 public class KinectManager : MonoBehaviour {
@@ -25,20 +23,23 @@ public class KinectManager : MonoBehaviour {
     /*  Gestion pour l'activité 2  */
     /*******************************/
 
-    // Gestion des événements
+    // Gestion des événements correspondant aux mouvements du joueurs significatifs
     public delegate void PlayerMovementUpEvent();
-    public event PlayerMovementUpEvent onPlayerMovementUpEvent;
-    // Gestion des événements
     public delegate void PlayerMovementLeftEvent();
-    public event PlayerMovementLeftEvent onPlayerMovementLeftEvent;
-    // Gestion des événements
     public delegate void PlayerMovementRightEvent();
+    public delegate void PlayerMovementBonusUpEvent();
+    public delegate void PlayerMovementBonusDownEvent();
+    public event PlayerMovementUpEvent onPlayerMovementUpEvent;
+    public event PlayerMovementLeftEvent onPlayerMovementLeftEvent;
     public event PlayerMovementRightEvent onPlayerMovementRightEvent;
+    public event PlayerMovementBonusUpEvent onPlayerMovementBonusUpEvent;
+    public event PlayerMovementBonusDownEvent onPlayerMovementBonusDownEvent;
 
     // Pour faciliter l'usage ultérieur
 
-    public enum Direction {
-        Up, Left, Right
+    public enum Direction
+    {
+        Up, Left, Right, BonusUp, BonusDown
     };
 
     private bool leftHandUp = false;
@@ -71,21 +72,31 @@ public class KinectManager : MonoBehaviour {
         sendPlayerMovementEvent(Direction.Left);
     }
 
-
+    /** \brief Fonction factorisant l'envoi d'événements aux bullets concernés lors d'un mouvement significatif du joueur
+     *  \param d : Mouvement effectué
+     */
     private void sendPlayerMovementEvent(Direction d) {
-        switch (d)
+        switch (d)                                              // Selon le mouvement effectué
         {
-            case Direction.Up:
-                if (onPlayerMovementUpEvent != null)
-                    onPlayerMovementUpEvent();
+            case Direction.Up:                                  // Mouvement simple vers le haut
+                if (onPlayerMovementUpEvent != null)            // S'il y a des inscrits à l'event
+                    onPlayerMovementUpEvent();                  // On lance l'event
                 break;
-            case Direction.Left:
+            case Direction.Left:                                // Mouvement simple vers la gauche
                 if (onPlayerMovementLeftEvent != null)
                     onPlayerMovementLeftEvent();
                 break;
             case Direction.Right:
-                if (onPlayerMovementRightEvent != null)
+                if (onPlayerMovementRightEvent != null)         // Mouvement simple vers la droite
                     onPlayerMovementRightEvent();
+                break;
+            case Direction.BonusUp:
+                if (onPlayerMovementBonusUpEvent != null)       // Mouvement pour le bonus du haut
+                    onPlayerMovementBonusUpEvent();
+                break;
+            case Direction.BonusDown:
+                if (onPlayerMovementBonusDownEvent != null)     // Mouvement pour le bonus du bas
+                    onPlayerMovementBonusDownEvent();
                 break;
         }
     }
@@ -108,11 +119,6 @@ public class KinectManager : MonoBehaviour {
     }
 
     public void Update() {
-        // Not my problem
-
-        // Pour indiquer que vous frappez dans une direction : 
-        // sendPlayerMovementEvent(Direction.Left)
-
         if ((leftHandUp || rightHandUp) && chrono < 1)
             chrono += Time.deltaTime;
         else

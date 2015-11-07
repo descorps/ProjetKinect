@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Assets\Script\Avatar.cs" />
     <Compile Include="Assets\Script\Bullet.cs" />
+    <Compile Include="Assets\Script\BulletFactory.cs" />
     <Compile Include="Assets\Script\DontDestroyOnNewScene.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
     <Compile Include="Assets\Script\KinectManager.cs" />
