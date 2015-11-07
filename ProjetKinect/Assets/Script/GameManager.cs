@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour {
     private float timeBonus;
     [SerializeField]
     private int maxLife;
+    [SerializeField]
+    private float coefDifficulty = 0.2f;
 
 
     /***********************************/
@@ -227,7 +229,7 @@ public class GameManager : MonoBehaviour {
      */
     public void hit(KinectManager.Direction d) {
         if (d == KinectManager.Direction.Left || d == KinectManager.Direction.Right || d == KinectManager.Direction.Up) {
-            score++;
+            score += difficultylvl;
         }
         else if (d == KinectManager.Direction.BonusDown) {
             if (currentMode == Mode.LifeLimited)
@@ -236,7 +238,7 @@ public class GameManager : MonoBehaviour {
                 timeEndGame += timeBonus;
         }
         else if (d == KinectManager.Direction.BonusUp) {
-            score += scoreBonus;
+            score += scoreBonus * difficultylvl;
         }
     }
 
@@ -273,9 +275,9 @@ public class GameManager : MonoBehaviour {
     public void nextLevel() {
         difficultylvl++;
         // Effets peut être à modifier
-        minDeltaTimeBetweenTwoBullet *= 0.9f;
-        maxDeltaTimeBetweenTwoBullet *= 0.9f;
-        Bullet.modifySpeed(1.1f);
+        minDeltaTimeBetweenTwoBullet *= 1f - coefDifficulty;
+        maxDeltaTimeBetweenTwoBullet *= 1f - coefDifficulty;
+        Bullet.modifySpeed(1f + coefDifficulty);
     }
 
 
