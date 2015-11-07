@@ -44,18 +44,23 @@ public class Bullet : MonoBehaviour {
             switch (d) {                                                                // Suivant le mouvement demandé
                 case KinectManager.Direction.Up:
                     KinectManager.Instance.onPlayerMovementUpEvent += onDirection;      // On s'inscrit à l'évènement correspondant
+                    GetComponent<Renderer>().material.color = Color.white;    // À changer
                     break;
                 case KinectManager.Direction.Left:
                     KinectManager.Instance.onPlayerMovementLeftEvent += onDirection;
+                    GetComponent<Renderer>().material.color = Color.white;
                     break;
                 case KinectManager.Direction.Right:
                     KinectManager.Instance.onPlayerMovementRightEvent += onDirection;
+                    GetComponent<Renderer>().material.color = Color.white;
                     break;
                 case KinectManager.Direction.BonusUp:
                     KinectManager.Instance.onPlayerMovementBonusUpEvent += onDirection;
+                    GetComponent<Renderer>().material.color = Color.green;
                     break;
                 case KinectManager.Direction.BonusDown:
                     KinectManager.Instance.onPlayerMovementBonusDownEvent += onDirection;
+                    GetComponent<Renderer>().material.color = Color.green;
                     break;
             }
         }
@@ -73,11 +78,14 @@ public class Bullet : MonoBehaviour {
     void Update() {
         if (initialized) {                                              // Si la Bullet a été initialisée
             if (transform.position.z < z_hit) {                         // Si la bullet est touchable
-                GetComponent<Renderer>().material.color = Color.red;    // À changer
+                if (direction == KinectManager.Direction.Left || direction == KinectManager.Direction.Right || direction == KinectManager.Direction.Up)
+                    GetComponent<Renderer>().material.color = Color.red;
+                else
+                    GetComponent<Renderer>().material.color = Color.blue;
             }
-            else {
+            /*else {
                 GetComponent<Renderer>().material.color = Color.white;  // À changer
-            }
+            }*/
 
             if (transform.position.z < z_lost) {                        // Si la Bullet a été manquée
                 GameManager.Instance.miss(direction);                   // On indique au GameManager que la Bullet a été manquée
