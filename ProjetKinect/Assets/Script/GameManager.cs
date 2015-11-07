@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
     /** \brief Fonction Awake pour Unity3D, gère le singleton */
     void Awake() {
         if (Instance != null) {         // Si l'instance existe déjà, erreur
-            Debug.LogError("There is multiple instance of singleton GameManager2");
+            Debug.LogError("There is multiple instance of singleton GameManager");
             return;
         }
         Instance = this;
