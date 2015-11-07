@@ -9,7 +9,7 @@ using System.Collections;
 public class Bullet : MonoBehaviour {
 
     [SerializeField]
-    private float speed = 1f;   /** Vitesse de déplacement des Bullets de l'arrière plan vers le premier plan */
+    private static float speed = 1f;   /** Vitesse de déplacement des Bullets de l'arrière plan vers le premier plan */
 
     [SerializeField]
     private float z_hit = 10f;  /** Coordonnée z à partir de laquelle les Bullets sont touchables */
@@ -30,7 +30,10 @@ public class Bullet : MonoBehaviour {
     }
 
     KinectManager.Direction direction;  // Direction, mouvement associé au Bullet
-    
+
+    public static void modifySpeed(float ratio) {
+        speed *= ratio;
+    }
 
     /** \brief Fonction appelée sur évenement lors que le mouvement correspondant au Bullet a été effectué par le joueur */
     void onDirection() {
@@ -83,7 +86,7 @@ public class Bullet : MonoBehaviour {
             }
             else
             {
-                GetComponent<Renderer>().material.color = Color.white;    // À changer
+                GetComponent<Renderer>().material.color = Color.white;  // À changer
             }
 
             if (transform.position.z < z_lost) {                        // Si la Bullet a été manquée
