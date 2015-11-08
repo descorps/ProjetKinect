@@ -14,7 +14,7 @@ public class Bullet : MonoBehaviour {
     /****************/
 
     [SerializeField]
-    private static float speed = 100f;      /** Vitesse de déplacement des Bullets de l'arrière plan vers le premier plan */
+    private static float speed = 70f;      /** Vitesse de déplacement des Bullets de l'arrière plan vers le premier plan */
     [SerializeField]
     private float z_hit = 10f;              /** Coordonnée z à partir de laquelle les Bullets sont touchables */
     [SerializeField]
@@ -69,6 +69,33 @@ public class Bullet : MonoBehaviour {
         }
         direction = d;                                                                  // On mémorise le mouvement
         initialized = true;                                                             // On indique que l'initialisation a eu lieu
+    }
+
+    void OnDestroy()
+    {
+        switch (direction)
+        {                                                                // Suivant le mouvement demandé
+            case KinectManager.Direction.Up:
+                KinectManager.Instance.onPlayerMovementUpEvent -= onDirection;      // On s'inscrit à l'évènement correspondant
+                GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);    // Rouge clair lecoq
+                break;
+            case KinectManager.Direction.Left:
+                KinectManager.Instance.onPlayerMovementLeftEvent -= onDirection;
+                GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);
+                break;
+            case KinectManager.Direction.Right:
+                KinectManager.Instance.onPlayerMovementRightEvent -= onDirection;
+                GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);
+                break;
+            case KinectManager.Direction.BonusUp:
+                KinectManager.Instance.onPlayerMovementBonusUpEvent -= onDirection;
+                GetComponent<Renderer>().material.color = new Color(0.4f, 0.4f, 1); // bleu clair chazal
+                break;
+            case KinectManager.Direction.BonusDown:
+                KinectManager.Instance.onPlayerMovementBonusDownEvent -= onDirection;
+                GetComponent<Renderer>().material.color = new Color(0.4f, 0.4f, 1); ;
+                break;
+        }
     }
 
     /****************************/
@@ -141,18 +168,13 @@ public class Bullet : MonoBehaviour {
     /** \brief Fonction appelée sur évenement lors que le mouvement correspondant au Bullet a été effectué par le joueur */
     void onDirection()
     {
-        if (gameObject != null)
-        {
-            if (initialized && transform.position.z < z_hit)
-            {  // Si le Bullet est touchable
-                GameManager.Instance.hit(direction);            // On indique au GameManager qu'on a été touché
-                                                                // On sort une animation jolie
-                Debug.Log("Touché !");                          // En attendant une animation
-                initialized = false;                            // Reset l'initialisation
-                markForRelease(true);                           // On indique que ce Bullet est désormais disponible
-            }
+        if (initialized && transform.position.z < z_hit)
+        {  // Si le Bullet est touchable
+            GameManager.Instance.hit(direction);            // On indique au GameManager qu'on a été touché
+                                                            // On sort une animation jolie
+            Debug.Log("Touché !");                          // En attendant une animation
+            initialized = false;                            // Reset l'initialisation
+            markForRelease(true);                           // On indique que ce Bullet est désormais disponible
         }
-    }
-    
-
+     }
 }

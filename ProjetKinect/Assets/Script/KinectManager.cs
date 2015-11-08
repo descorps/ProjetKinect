@@ -86,28 +86,31 @@ public class KinectManager : MonoBehaviour {
      *  \param d : Mouvement effectué
      */
     private void sendPlayerMovementEvent(Direction d) {
-        switch (d)                                              // Selon le mouvement effectué
+        if (GameManager.Instance.currentMode == GameManager.Mode.LifeLimited || GameManager.Instance.currentMode == GameManager.Mode.TimeLimited)
         {
-            case Direction.Up:                                  // Mouvement simple vers le haut
-                if (onPlayerMovementUpEvent != null)            // S'il y a des inscrits à l'event
-                    onPlayerMovementUpEvent();                  // On lance l'event
-                break;
-            case Direction.Left:                                // Mouvement simple vers la gauche
-                if (onPlayerMovementLeftEvent != null)
-                    onPlayerMovementLeftEvent();
-                break;
-            case Direction.Right:
-                if (onPlayerMovementRightEvent != null)         // Mouvement simple vers la droite
-                    onPlayerMovementRightEvent();
-                break;
-            case Direction.BonusUp:
-                if (onPlayerMovementBonusUpEvent != null)       // Mouvement pour le bonus du haut
-                    onPlayerMovementBonusUpEvent();
-                break;
-            case Direction.BonusDown:
-                if (onPlayerMovementBonusDownEvent != null)     // Mouvement pour le bonus du bas
-                    onPlayerMovementBonusDownEvent();
-                break;
+            switch (d)                                              // Selon le mouvement effectué
+            {
+                case Direction.Up:                                  // Mouvement simple vers le haut
+                    if (onPlayerMovementUpEvent != null)            // S'il y a des inscrits à l'event
+                        onPlayerMovementUpEvent();                  // On lance l'event
+                    break;
+                case Direction.Left:                                // Mouvement simple vers la gauche
+                    if (onPlayerMovementLeftEvent != null)
+                        onPlayerMovementLeftEvent();
+                    break;
+                case Direction.Right:
+                    if (onPlayerMovementRightEvent != null)         // Mouvement simple vers la droite
+                        onPlayerMovementRightEvent();
+                    break;
+                case Direction.BonusUp:
+                    if (onPlayerMovementBonusUpEvent != null)       // Mouvement pour le bonus du haut
+                        onPlayerMovementBonusUpEvent();
+                    break;
+                case Direction.BonusDown:
+                    if (onPlayerMovementBonusDownEvent != null)     // Mouvement pour le bonus du bas
+                        onPlayerMovementBonusDownEvent();
+                    break;
+            }
         }
     }
 
