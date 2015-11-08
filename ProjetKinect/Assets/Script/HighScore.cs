@@ -46,21 +46,23 @@ public class HighScore : MonoBehaviour {
 
     // Initialise et charge les scores
     void Start() {
-        int i = 0;
 
-        for (i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
+        {
             scoresLimitedLife[i] = 0;
-        for (i = 0; i < 10; i++)
             scoresLimitedTime[i] = 0;
+        }
+
+        int j = 0;
 
         if (File.Exists(scoresFilePath)) {
             string[] content = File.ReadAllLines(scoresFilePath);
             foreach (string l in content) {
-                if (i < 10)
-                    scoresLimitedLife[i] = int.Parse(l);
-                else if (i < 20)
-                    scoresLimitedTime[i - 10] = int.Parse(l);
-                i++;
+                if (j < 10)
+                    scoresLimitedLife[j] = int.Parse(l);
+                else if (j < 20)
+                    scoresLimitedTime[j - 10] = int.Parse(l);
+                j++;
             }
         }
     }

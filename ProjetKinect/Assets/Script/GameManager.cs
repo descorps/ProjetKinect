@@ -221,7 +221,7 @@ public class GameManager : MonoBehaviour {
             // Condition de fin
             if (Time.time > timeEndGame)
             {
-                HighScore.Instance.postLimitedLife(score);
+                HighScore.Instance.postLimitedTime(score);
                 displayScoreLimitedTime();
             }
         }
@@ -260,7 +260,7 @@ public class GameManager : MonoBehaviour {
             if (currentMode == Mode.LifeLimited)
                 timeBeginGame -= timeBonus;
             else if (currentMode == Mode.TimeLimited)
-                timeBeginGame -= timeBonus;
+                timeEndGame += timeBonus;
         }
         else if (d == KinectManager.Direction.BonusUp) {
             if (currentMode == Mode.LifeLimited)
@@ -355,6 +355,11 @@ public class GameManager : MonoBehaviour {
                 if (score != 0)
                 {
                     scoresLife += i + " - " + score + " points" + Environment.NewLine;
+                    i++;
+                }
+                else if (score == 1)
+                {
+                    scoresLife += i + " - 1 point" + Environment.NewLine;
                     i++;
                 }
                 else
