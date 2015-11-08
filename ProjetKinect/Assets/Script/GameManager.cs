@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
     /** \brief Fonction Awake pour Unity3D, gère le singleton */
     void Awake() {
         if (Instance != null) {         // Si l'instance existe déjà, erreur
-            Debug.LogError("There is multiple instance of singleton GameManager2");
+            Debug.LogError("There is multiple instance of singleton GameManager");
             return;
         }
         Instance = this;
@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour {
     private float timeBonus;
     [SerializeField]
     private int maxLife;
+    [SerializeField]
+    private float coefDifficulty = 0.2f;
 
 
     /***********************************/
@@ -100,22 +102,34 @@ public class GameManager : MonoBehaviour {
 
     float timeBeginGame;                        // Pour la gestion de la partie en temps limité
     float timeEndGame;                          // Pour la gestion de la partie en temps limité
-    private float nextBulletTime = 0;                     // Instant où l'on pourra faire spawn une nouvelle Bullet
+    private float nextBulletTime = 0;           // Instant où l'on pourra faire spawn une nouvelle Bullet
 
 
     /**************************************/
     /*  Accesseur de l'état de la partie  */
     /**************************************/
 
-    public float getLimitedTimeDuration {       /** Accesseurs pour la durée de fin de la partie */
-        get { return timeEndGame - timeBeginGame; }
+    /** \brief Fonction donnant la durée de la partie (tenant compte des bonus passés) 
+     *  \return Durée de la partie en secondes
+     */
+    public float getLimitedTimeDuration() {
+        return timeEndGame - timeBeginGame;
     }
-    public float getTimer {
-        get {  return timeEndGame - Time.time; }
+    /** \brief Fonction indiquant le temps restant dans la partie
+     *  \return Temps restant en secondes
+     */
+    public float getTimer() {                         
+        return timeEndGame - Time.time;
     }
-    public float getCurrentTime {               /** Accesseurs pour la durée actuelle de la partie */
-        get { return Time.time - timeBeginGame; }
+    /** \brief Fonction indiquand la durée écoulée depuis le début de la partie
+     *  \return Temps écoulé en secondes
+     */
+    public float getCurrentTime() {
+        return Time.time - timeBeginGame;
     }
+    /** \brief Niveau actuel de difficulté
+     *  \return entier représentant le niveau actuel de difficulté
+     */
     public int difficultylvl { get; private set; }
 
 
@@ -144,7 +158,7 @@ public class GameManager : MonoBehaviour {
             // Spawn des trucs
             float t = Time.time;
             if (t > nextBulletTime) {
-                int side = (int) Random.Range(0, 3f + 3 * bonusRatio);
+                int side = (int) Random.Range(0, 3f + 3f * bonusRatio);
                 Bullet bullet = BulletFactory.getBullet();
                 switch (side) {
                     case 0:
@@ -160,8 +174,8 @@ public class GameManager : MonoBehaviour {
                         bullet.init(KinectManager.Direction.Up);
                         break;
                     default:
-                        float typeBonus = Random.Range(0, 1);
-                        if (typeBonus < 0.5) {
+                        float typeBonus = Random.Range(0.0f, 1.0f);
+                        if (typeBonus > 0.5) {
                             bullet.Position = upStartPosition;
                             bullet.init(KinectManager.Direction.BonusUp);
                         }
@@ -177,16 +191,18 @@ public class GameManager : MonoBehaviour {
         if (currentMode == Mode.LifeLimited) {
             // Condition de fin
             if (life <= 0)
-                GoBackToMenu();
+                displayScoreLimitedLife();
         }
         else if (currentMode == Mode.TimeLimited) {
             // Condition de fin
             if (Time.time > timeEndGame)
-                GoBackToMenu();
+                displayScoreLimitedLife();
 
             // Condition de passage de niveau
-            if (Time.time > timeEndGame)
+            if (Time.time > timeEndGame) {
                 nextLevel();
+                timeEndGame += limitedTimeDuration; // Pour le prochain passage de niveau
+            }
         }
 
         if(Input.GetKey(KeyCode.Escape))
@@ -200,6 +216,8 @@ public class GameManager : MonoBehaviour {
     /*  Méthodes de gestion du jeu  */
     /********************************/
 
+    /** \brief Fonction indiquant qu'un Bullet a été manquée 
+     */
     public void miss(KinectManager.Direction d) {
         if (d == KinectManager.Direction.Left || d == KinectManager.Direction.Right || d == KinectManager.Direction.Up) {
             if (currentMode == Mode.LifeLimited)
@@ -209,9 +227,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /** \brief Fonction indiquant qu'un Bullet a été atteint
+     */
     public void hit(KinectManager.Direction d) {
         if (d == KinectManager.Direction.Left || d == KinectManager.Direction.Right || d == KinectManager.Direction.Up) {
-            score++;
+            score += difficultylvl;
         }
         else if (d == KinectManager.Direction.BonusDown) {
             if (currentMode == Mode.LifeLimited)
@@ -220,10 +240,16 @@ public class GameManager : MonoBehaviour {
                 timeEndGame += timeBonus;
         }
         else if (d == KinectManager.Direction.BonusUp) {
-            score += scoreBonus;
+            score += scoreBonus * difficultylvl;
         }
     }
 
+    /****************************************************/
+    /*  Fonctions de transition entre les états du jeu  */
+    /****************************************************/
+
+    /** \brief Fonction lançant le jeu en mode temps limité
+     */
     public void runLimitedTime() {
         score = 0;
         timeBeginGame = Time.time;
@@ -233,6 +259,8 @@ public class GameManager : MonoBehaviour {
         Application.LoadLevel("LimitedTime");
         Debug.Log("run limited time");
     }
+    /** \brief Fonction lançant le jeu en mode vie limitée
+     */
     public void runLimitedLife() {
         life = maxLife;
         difficultylvl = 1;
@@ -245,17 +273,41 @@ public class GameManager : MonoBehaviour {
         Debug.Log("run limited life");
     }
 
+    /** \brief Fonction augmentant la difficulté du jeu en mode vie limitée */
     public void nextLevel() {
         difficultylvl++;
         // Effets peut être à modifier
-        minDeltaTimeBetweenTwoBullet *= 0.9f;
-        maxDeltaTimeBetweenTwoBullet *= 0.9f;
-        Bullet.modifySpeed(1.1f);
+        minDeltaTimeBetweenTwoBullet *= 1f - coefDifficulty;
+        maxDeltaTimeBetweenTwoBullet *= 1f - coefDifficulty;
+        Bullet.modifySpeed(1f + coefDifficulty);
     }
 
+
+    /** \brief Fonction déclenchant un retour au menu */
     public void GoBackToMenu() {
         Application.LoadLevel("MainMenu");
         currentMode = Mode.Menu;
+    }
+
+    public void displayScoreLimitedLife()
+    {
+        Time.timeScale = 0;
+        Debug.Log(score);
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            GoBackToMenu();
+            Time.timeScale = 1;
+        }
+        //bouton
+    }
+
+    public void displayScoreLimitedTime()
+    {
+        Time.timeScale = 0;
+        Debug.Log(score);
+        if (Input.GetKey(KeyCode.Escape))
+            GoBackToMenu();
+        //boutonsss
     }
 
     /*********************/
@@ -265,6 +317,7 @@ public class GameManager : MonoBehaviour {
 
     public void quit()
     {
+        Application.Quit();
         Debug.Log("quit");
     }
 

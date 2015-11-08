@@ -19,10 +19,6 @@ public class BonusUp : MonoBehaviour {
     {
         while (Application.isPlaying)
         {
-            if(Head == null)
-            {
-                Debug.Log("pas de tete trouvée");
-            }
             previousPosition = Head.transform.position;
             yield return new WaitForEndOfFrame();
             currentSpeed = (previousPosition - Head.transform.position) / Time.deltaTime;
@@ -33,6 +29,12 @@ public class BonusUp : MonoBehaviour {
     void Start ()
     {
         Head = GameObject.Find("03_Head");
+
+        if (Head == null)
+        {
+            Debug.Log("pas de tete trouvée");
+        }
+
         RightHand = GameObject.Find("23_Hand_Right");
         LeftHand = GameObject.Find("13_Hand_Left");
         CenterHip = GameObject.Find("00_Hip_Center");
