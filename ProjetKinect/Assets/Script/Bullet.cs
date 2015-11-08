@@ -87,15 +87,9 @@ public class Bullet : MonoBehaviour {
                     else
                         GetComponent<Renderer>().material.color = Color.blue;
                 }
-                /*else {
-                    GetComponent<Renderer>().material.color = Color.white;  // À changer
-                }*/
 
                 if (transform.position.z < z_lost) {                        // Si la Bullet a été manquée
                     GameManager.Instance.miss(direction);                   // On indique au GameManager que la Bullet a été manquée
-                                                                            // On sort une animation moche
-                    Debug.Log("Raté !");                                    // En attente d'une animation
-                    initialized = false;                                    // Reset l'initialisation
                     markForRelease(false);
                 }
                 else {
@@ -105,8 +99,11 @@ public class Bullet : MonoBehaviour {
             else {                                                          // Si le Bullet est en train de mourir
                 if (Time.time > releaseTime) {                              // Si la durée de disparition est atteinte
                     markedForRelease = false;
+                    initialized = false;                                    // Reset l'initialisation
                     BulletFactory.ReleaseBullet(this);                      // On libère la Bullet pour usage futur
                 }
+                else
+                    transform.Translate(new Vector3(0, 0, -speed * Time.deltaTime));           // Sinon on déplace la Bullet
             }
         }
     }
@@ -146,9 +143,6 @@ public class Bullet : MonoBehaviour {
             if (initialized && transform.position.z < z_hit)
             {  // Si le Bullet est touchable
                 GameManager.Instance.hit(direction);            // On indique au GameManager qu'on a été touché
-                                                                // On sort une animation jolie
-                Debug.Log("Touché !");                          // En attendant une animation
-                initialized = false;                            // Reset l'initialisation
                 markForRelease(true);                           // On indique que ce Bullet est désormais disponible
             }
         }
