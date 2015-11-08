@@ -125,7 +125,7 @@ public class HighScore : MonoBehaviour {
 
     /** \brief Fonction donnant accès au leaderboard pour le mode temps limité
      *  \return Tableau de dix int représentant les dix meilleurs scores en ordre décroissant
-     
+     */
     int[] getLimitedTime() {
         return scoresLimitedTime;
     }
