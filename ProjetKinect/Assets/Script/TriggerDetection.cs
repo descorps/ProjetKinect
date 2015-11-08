@@ -57,10 +57,14 @@ public class TriggerDetection : MonoBehaviour {
         {
             if (modeName == GameManager.Mode.TimeLimited)
                 GameManager.Instance.runLimitedTime();
-            if (modeName == GameManager.Mode.LifeLimited)
+            else if (modeName == GameManager.Mode.LifeLimited)
                 GameManager.Instance.runLimitedLife();
-            if (modeName == GameManager.Mode.Quit)
+            else if (modeName == GameManager.Mode.Quit)
                 GameManager.Instance.quit();
+            else if (modeName == GameManager.Mode.Menu)
+                GameManager.Instance.GoBackToMenu();
+            else if (modeName == GameManager.Mode.HighScore)
+                GameManager.Instance.displayHighScore();
             chrono = 0;
         }
     }

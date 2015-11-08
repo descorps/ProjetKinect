@@ -59,7 +59,7 @@ public class HighScore : MonoBehaviour {
                 if (i < 10)
                     scoresLimitedLife[i] = int.Parse(l);
                 else if (i < 20)
-                    scoresLimitedTime[i] = int.Parse(l);
+                    scoresLimitedTime[i - 10] = int.Parse(l);
                 i++;
             }
         }
@@ -73,7 +73,7 @@ public class HighScore : MonoBehaviour {
         for (int i = 0; i < 10; i++)
             content[i] = scoresLimitedLife[i].ToString();
         for (int i = 0; i < 10; i++)
-            content[i] = scoresLimitedTime[i + 10].ToString();
+            content[i + 10] = scoresLimitedTime[i].ToString();
         File.WriteAllLines(scoresFilePath, content);
     }
 
@@ -86,7 +86,7 @@ public class HighScore : MonoBehaviour {
      *  \param score : valeur du nouveau score à soumettre
      *  Cette fonction mémorise le score si celui-ci figure au top 10 des meilleurs scores jamais effectués
      */
-    void postLimitedLife(int score) {
+    public void postLimitedLife(int score) {
         if (score > scoresLimitedLife[9]) {                 // Si le score mérite d'être sauvegardé
             for (int i = 8; i >= 0; i--) {                  // Pour chaque score existant
                 if (score > scoresLimitedLife[i])           // Si le nouveau score est meilleur alors on recul d'un cran pour lui faire de la place
@@ -96,6 +96,7 @@ public class HighScore : MonoBehaviour {
                     return;
                 }
             }
+            scoresLimitedLife[0] = score;
         }
     }
 
@@ -103,7 +104,7 @@ public class HighScore : MonoBehaviour {
      *  \param score : valeur du nouveau score à soumettre
      *  Cette fonction mémorise le score si celui-ci figure au top 10 des meilleurs scores jamais effectués
      */
-    void postLimitedTime(int score) {
+    public void postLimitedTime(int score) {
         if (score > scoresLimitedTime[9]) {                // Si le score mérite d'être sauvegardé
             for (int i = 8; i >= 0; i--) {      // Pour chaque score existant
                 if (score > scoresLimitedTime[i])          // Si le nouveau score est meilleur alors on recul d'un cran pour lui faire de la place
@@ -113,20 +114,21 @@ public class HighScore : MonoBehaviour {
                     return;
                 }
             }
+            scoresLimitedTime[0] = score;
         }
     }
 
     /** \brief Fonction donnant accès au leaderboard pour le mode vie limitée 
      *  \return Tableau de dix int représentant les dix meilleurs scores en ordre décroissant
      */
-    int[] getLimitedLife() {
+    public int[] getLimitedLife() {
         return scoresLimitedLife;
     }
 
     /** \brief Fonction donnant accès au leaderboard pour le mode temps limité
      *  \return Tableau de dix int représentant les dix meilleurs scores en ordre décroissant
      */
-    int[] getLimitedTime() {
+    public int[] getLimitedTime() {
         return scoresLimitedTime;
     }
 }
