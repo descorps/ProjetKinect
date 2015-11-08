@@ -66,6 +66,8 @@ public class GameManager : MonoBehaviour {
     private int maxLife;
     [SerializeField]
     private float coefDifficulty = 0.2f;
+    [SerializeField]
+    private int missPointsLost = 0;
 
 
     /***********************************/
@@ -191,6 +193,11 @@ public class GameManager : MonoBehaviour {
         }
         if (currentMode == Mode.LifeLimited)
         {
+
+            GameObject.Find("LivesText").GetComponent<Text>().text = life + " lives";
+            GameObject.Find("ScoreText").GetComponent<Text>().text = (int)(getCurrentTime()) + " points";
+            GameObject.Find("LevelText").GetComponent<Text>().text = "Level " + difficultylvl + Environment.NewLine + "(" + (int)(timeEndGame - Time.time) + "s)";
+
             // Condition de fin
             if (life <= 0)
             {
@@ -209,6 +216,8 @@ public class GameManager : MonoBehaviour {
         }
         else if (currentMode == Mode.TimeLimited)
         {
+            GameObject.Find("ScoreText").GetComponent<Text>().text = score + " points";
+            GameObject.Find("RemainingTimeText").GetComponent<Text>().text = (int)(getTimer()) + " s";
             // Condition de fin
             if (Time.time > timeEndGame)
             {
@@ -230,7 +239,7 @@ public class GameManager : MonoBehaviour {
             if (currentMode == Mode.LifeLimited)
                 life--;
             else if (currentMode == Mode.TimeLimited)
-                score--;
+                score -= missPointsLost;
         }
     }
 
@@ -238,16 +247,26 @@ public class GameManager : MonoBehaviour {
      */
     public void hit(KinectManager.Direction d) {
         if (d == KinectManager.Direction.Left || d == KinectManager.Direction.Right || d == KinectManager.Direction.Up) {
-            score += difficultylvl;
+            if(currentMode == Mode.LifeLimited)
+            {
+                score += difficultylvl;
+            }
+            else if (currentMode == Mode.TimeLimited)
+            {
+                score += 1;
+            }
         }
         else if (d == KinectManager.Direction.BonusDown) {
             if (currentMode == Mode.LifeLimited)
-                life += lifeBonus;
-            if (currentMode == Mode.TimeLimited)
-                timeEndGame += timeBonus;
+                timeBeginGame -= timeBonus;
+            else if (currentMode == Mode.TimeLimited)
+                timeBeginGame -= timeBonus;
         }
         else if (d == KinectManager.Direction.BonusUp) {
-            score += scoreBonus * difficultylvl;
+            if (currentMode == Mode.LifeLimited)
+                life += lifeBonus;
+            else if (currentMode == Mode.TimeLimited)
+                score += scoreBonus;
         }
     }
 

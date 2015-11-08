@@ -47,7 +47,7 @@ public class Bullet : MonoBehaviour {
             switch (d) {                                                                // Suivant le mouvement demandé
                 case KinectManager.Direction.Up:
                     KinectManager.Instance.onPlayerMovementUpEvent += onDirection;      // On s'inscrit à l'évènement correspondant
-                    GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);    // Rouge clair lecoq
+                    GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);    // Rouge clair
                     break;
                 case KinectManager.Direction.Left:
                     KinectManager.Instance.onPlayerMovementLeftEvent += onDirection;
@@ -59,7 +59,7 @@ public class Bullet : MonoBehaviour {
                     break;
                 case KinectManager.Direction.BonusUp:
                     KinectManager.Instance.onPlayerMovementBonusUpEvent += onDirection;
-                    GetComponent<Renderer>().material.color = new Color(0.4f, 0.4f, 1); // bleu clair chazal
+                    GetComponent<Renderer>().material.color = new Color(0.4f, 0.4f, 1); // bleu clair
                     break;
                 case KinectManager.Direction.BonusDown:
                     KinectManager.Instance.onPlayerMovementBonusDownEvent += onDirection;
@@ -77,23 +77,18 @@ public class Bullet : MonoBehaviour {
         {                                                                // Suivant le mouvement demandé
             case KinectManager.Direction.Up:
                 KinectManager.Instance.onPlayerMovementUpEvent -= onDirection;      // On s'inscrit à l'évènement correspondant
-                GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);    // Rouge clair lecoq
                 break;
             case KinectManager.Direction.Left:
                 KinectManager.Instance.onPlayerMovementLeftEvent -= onDirection;
-                GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);
                 break;
             case KinectManager.Direction.Right:
                 KinectManager.Instance.onPlayerMovementRightEvent -= onDirection;
-                GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.4f);
                 break;
             case KinectManager.Direction.BonusUp:
                 KinectManager.Instance.onPlayerMovementBonusUpEvent -= onDirection;
-                GetComponent<Renderer>().material.color = new Color(0.4f, 0.4f, 1); // bleu clair chazal
                 break;
             case KinectManager.Direction.BonusDown:
                 KinectManager.Instance.onPlayerMovementBonusDownEvent -= onDirection;
-                GetComponent<Renderer>().material.color = new Color(0.4f, 0.4f, 1); ;
                 break;
         }
     }
@@ -142,6 +137,24 @@ public class Bullet : MonoBehaviour {
             GetComponent<Renderer>().material.color = Color.black;
         markedForRelease = true;
         releaseTime = Time.time + deathDuration;
+        switch (direction)
+        {                                                                // Suivant le mouvement demandé
+            case KinectManager.Direction.Up:
+                KinectManager.Instance.onPlayerMovementUpEvent -= onDirection;      // On s'inscrit à l'évènement correspondant
+                break;
+            case KinectManager.Direction.Left:
+                KinectManager.Instance.onPlayerMovementLeftEvent -= onDirection;
+                break;
+            case KinectManager.Direction.Right:
+                KinectManager.Instance.onPlayerMovementRightEvent -= onDirection;
+                break;
+            case KinectManager.Direction.BonusUp:
+                KinectManager.Instance.onPlayerMovementBonusUpEvent -= onDirection;
+                break;
+            case KinectManager.Direction.BonusDown:
+                KinectManager.Instance.onPlayerMovementBonusDownEvent -= onDirection;
+                break;
+        }
     }
 
     /*********************/
