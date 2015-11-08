@@ -8,7 +8,7 @@ using System.Collections;
  */
 
 public class GameManager : MonoBehaviour {
-    
+
     /***********************/
     /*  Gestion singleton  */
     /***********************/
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour {
     /******************/
 
     public enum Mode {                          /** Modes de fonctionnement de l'application */
-        Init, Menu, TimeLimited, LifeLimited, Score, HighScore, Quit
+        Init, Menu, TimeLimited, LifeLimited, ScoreLimitedTime, ScoreLimitedLife, HighScore, Quit
     }
 
 
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour {
     /** \brief Fonction indiquant le temps restant dans la partie
      *  \return Temps restant en secondes
      */
-    public float getTimer() {                         
+    public float getTimer() {
         return timeEndGame - Time.time;
     }
     /** \brief Fonction indiquand la durée écoulée depuis le début de la partie
@@ -145,7 +145,7 @@ public class GameManager : MonoBehaviour {
 
         kinect = Instantiate(kinectPrefab);
         kinectPointController = Instantiate(kinectPointControllerPrefab);
-        
+
         KinectManager.Instance.onPlayerMovementRightEvent += displayTextRight;
         KinectManager.Instance.onPlayerMovementLeftEvent += displayTextLeft;
         KinectManager.Instance.onPlayerMovementUpEvent += displayTextUp;
@@ -159,7 +159,7 @@ public class GameManager : MonoBehaviour {
             // Spawn des trucs
             float t = Time.time;
             if (t > nextBulletTime) {
-                int side = (int) UnityEngine.Random.Range(0, 3f + 3f * bonusRatio);
+                int side = (int)UnityEngine.Random.Range(0, 3f + 3f * bonusRatio);
                 Bullet bullet = BulletFactory.getBullet();
                 switch (side) {
                     case 0:
@@ -195,6 +195,7 @@ public class GameManager : MonoBehaviour {
             if (life <= 0)
             {
                 score = (int)getCurrentTime();
+                HighScore.Instance.postLimitedLife(score);
                 displayScoreLimitedLife();
             }
 
@@ -210,7 +211,10 @@ public class GameManager : MonoBehaviour {
         {
             // Condition de fin
             if (Time.time > timeEndGame)
+            {
+                HighScore.Instance.postLimitedLife(score);
                 displayScoreLimitedTime();
+            }
         }
     }
 
@@ -295,17 +299,76 @@ public class GameManager : MonoBehaviour {
     public void displayScoreLimitedLife()
     {
         Application.LoadLevel("Score");
-        GameObject.Find("TextScore").GetComponent<Text>().text = "LIMITED LIFE" + Environment.NewLine + "Score : " + score + " points";
-        currentMode = Mode.Score;
+        currentMode = Mode.ScoreLimitedLife;
     }
+
+
 
     public void displayScoreLimitedTime()
     {
         Application.LoadLevel("Score");
-        GameObject.Find("TextScore").GetComponent<Text>().text = "LIMITED TIME" + Environment.NewLine + "Score : " + score + " points";
-        currentMode = Mode.Score;
+        currentMode = Mode.ScoreLimitedTime;
     }
 
+    private void OnLevelWasLoaded(int level)
+    {
+        // score == niveau 4
+        if (level == 4)
+        {
+            if (currentMode == Mode.ScoreLimitedLife)
+            {
+                //Debug.Log("affiche score life");
+                GameObject.Find("TextScore").GetComponent<Text>().text = "LIMITED LIFE" + Environment.NewLine + "Score : " + score + " points";
+            }
+            else if (currentMode == Mode.ScoreLimitedTime)
+            {
+                //Debug.Log("affiche score time");
+                GameObject.Find("TextScore").GetComponent<Text>().text = "LIMITED TIME" + Environment.NewLine + "Score : " + score + " points";
+            }
+        }
+        // highscore == niveau 5
+        if (level == 5)
+        {
+            string scoresLife = "";
+            int i = 1;
+            foreach(int score in HighScore.Instance.getLimitedLife())
+            {
+                if (score != 0)
+                {
+                    scoresLife += i + " - " + score + " points" + Environment.NewLine;
+                    i++;
+                }
+                else
+                    break;
+            }
+            GameObject.Find("TextHighScoreLimitedLife").GetComponent<Text>().text = "Limited" + Environment.NewLine + "Life" + Environment.NewLine  + scoresLife;
+
+            string scoresTime = "";
+            i = 1;
+            foreach (int score in HighScore.Instance.getLimitedTime())
+            {
+                if (score > 1)
+                {
+                    scoresTime += i + " - " + score + " points" + Environment.NewLine;
+                    i++;
+                }
+                else if (score == 1)
+                {
+                    scoresTime += i + " - 1 point" + Environment.NewLine;
+                    i++;
+                }
+                else
+                    break;
+            }
+            GameObject.Find("TextHighScoreLimitedTime").GetComponent<Text>().text = "Limited" + Environment.NewLine + "Time" + Environment.NewLine + scoresTime;
+        }
+    }
+
+    public void displayHighScore()
+    {
+        Application.LoadLevel("HighScore");
+        currentMode = Mode.HighScore;
+    }
     /*********************/
     /*  Autres méthodes  */
     /*********************/
