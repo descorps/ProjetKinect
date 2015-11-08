@@ -193,7 +193,10 @@ public class GameManager : MonoBehaviour {
         {
             // Condition de fin
             if (life <= 0)
+            {
+                score = (int)getCurrentTime();
                 displayScoreLimitedLife();
+            }
 
             // Condition de passage de niveau
             if (Time.time > timeEndGame)
@@ -292,14 +295,14 @@ public class GameManager : MonoBehaviour {
     public void displayScoreLimitedLife()
     {
         Application.LoadLevel("Score");
-        GameObject.Find("TextScore").GetComponent<Text>().text = "Score :" + Environment.NewLine + getCurrentTime() + " points";
+        GameObject.Find("TextScore").GetComponent<Text>().text = "LIMITED LIFE" + Environment.NewLine + "Score : " + score + " points";
         currentMode = Mode.Score;
     }
 
     public void displayScoreLimitedTime()
     {
         Application.LoadLevel("Score");
-        GameObject.Find("TextScore").GetComponent<Text>().text = "Score :" + Environment.NewLine + getCurrentTime() + " points";
+        GameObject.Find("TextScore").GetComponent<Text>().text = "LIMITED TIME" + Environment.NewLine + "Score : " + score + " points";
         currentMode = Mode.Score;
     }
 
