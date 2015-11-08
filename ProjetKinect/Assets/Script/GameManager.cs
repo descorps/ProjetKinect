@@ -189,26 +189,25 @@ public class GameManager : MonoBehaviour {
                 nextBulletTime = t + UnityEngine.Random.Range(minDeltaTimeBetweenTwoBullet, maxDeltaTimeBetweenTwoBullet);
             }
         }
-        if (currentMode == Mode.LifeLimited) {
+        if (currentMode == Mode.LifeLimited)
+        {
             // Condition de fin
             if (life <= 0)
                 displayScoreLimitedLife();
-        }
-        else if (currentMode == Mode.TimeLimited) {
-            // Condition de fin
-            if (Time.time > timeEndGame)
-                displayScoreLimitedTime();
 
             // Condition de passage de niveau
-            if (Time.time > timeEndGame) {
+            if (Time.time > timeEndGame)
+            {
                 nextLevel();
                 timeEndGame += limitedTimeDuration; // Pour le prochain passage de niveau
             }
-        }
 
-        if(Input.GetKey(KeyCode.Escape))
+        }
+        else if (currentMode == Mode.TimeLimited)
         {
-            GoBackToMenu();
+            // Condition de fin
+            if (Time.time > timeEndGame)
+                displayScoreLimitedTime();
         }
     }
 
