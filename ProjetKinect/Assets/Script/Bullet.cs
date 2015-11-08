@@ -14,12 +14,13 @@ public class Bullet : MonoBehaviour {
     /****************/
 
     [SerializeField]
-    private static float speed = 100f;    /** Vitesse de déplacement des Bullets de l'arrière plan vers le premier plan */
+    private static float speed = 100f;      /** Vitesse de déplacement des Bullets de l'arrière plan vers le premier plan */
     [SerializeField]
-    private float z_hit = 10f;          /** Coordonnée z à partir de laquelle les Bullets sont touchables */
+    private float z_hit = 10f;              /** Coordonnée z à partir de laquelle les Bullets sont touchables */
     [SerializeField]
-    private float z_lost = 0f;          /** Coordonnée z à partir de laquelle les Bullets sont considérés comme manqués */
-        
+    private float z_lost = 0f;              /** Coordonnée z à partir de laquelle les Bullets sont considérés comme manqués */
+    [SerializeField]
+    private float deathDuration = 0.5f;     /** Temps au bout duquel une Bullet touchée ou manquée disparait */
     /**********************************/
     /*  Variables de gestion interne  */
     /**********************************/
@@ -27,6 +28,8 @@ public class Bullet : MonoBehaviour {
     private bool initialized = false;   // Indique si le Bullet a été initialisé
     KinectManager.Direction direction;  // Direction, mouvement associé au Bullet
 
+    bool markedForRelease = false;
+    float releaseTime;
 
     /*******************************/
     /*  Fonction d'initialisation  */
@@ -76,30 +79,44 @@ public class Bullet : MonoBehaviour {
     /** \Brief Fonction d'actualisation pour Unity3D
      */
     void Update() {
-        if (initialized) {                                              // Si la Bullet a été initialisée
-            if (transform.position.z < z_hit) {                         // Si la bullet est touchable
-                if (direction == KinectManager.Direction.Left || direction == KinectManager.Direction.Right || direction == KinectManager.Direction.Up)
-                    GetComponent<Renderer>().material.color = Color.red;
-                else
-                    GetComponent<Renderer>().material.color = Color.blue;
-            }
-            /*else {
-                GetComponent<Renderer>().material.color = Color.white;  // À changer
-            }*/
+        if (initialized) {                                                  // Si la Bullet a été initialisée
+            if (!markedForRelease) {                                        // Si le Bullet n'est pas en train de mourir
+                if (transform.position.z < z_hit) {                         // Si la bullet est touchable
+                    if (direction == KinectManager.Direction.Left || direction == KinectManager.Direction.Right || direction == KinectManager.Direction.Up)
+                        GetComponent<Renderer>().material.color = Color.red;
+                    else
+                        GetComponent<Renderer>().material.color = Color.blue;
+                }
+                /*else {
+                    GetComponent<Renderer>().material.color = Color.white;  // À changer
+                }*/
 
-            if (transform.position.z < z_lost) {                        // Si la Bullet a été manquée
-                GameManager.Instance.miss(direction);                   // On indique au GameManager que la Bullet a été manquée
-                // On sort une animation moche
-                Debug.Log("Raté !");                                    // En attente d'une animation
-                initialized = false;                                    // Reset l'initialisation
-                BulletFactory.ReleaseBullet(this);                      // On libère la Bullet pour usage futur
+                if (transform.position.z < z_lost) {                        // Si la Bullet a été manquée
+                    GameManager.Instance.miss(direction);                   // On indique au GameManager que la Bullet a été manquée
+                                                                            // On sort une animation moche
+                    Debug.Log("Raté !");                                    // En attente d'une animation
+                    initialized = false;                                    // Reset l'initialisation
+                    markForRelease(false);
+                }
+                else {
+                    transform.Translate(new Vector3(0, 0, -speed * Time.deltaTime));           // Sinon on déplace la Bullet
+                }
             }
-            else {
-                transform.Translate(new Vector3(0, 0, -speed * Time.deltaTime));           // Sinon on déplace la Bullet
+            else {                                                          // Si le Bullet est en train de mourir
+                if (Time.time > releaseTime)                                // Si la durée de disparition est atteinte
+                    BulletFactory.ReleaseBullet(this);                      // On libère la Bullet pour usage futur
             }
         }
     }
 
+    void markForRelease(bool hit) {
+        if (hit)
+            GetComponent<Renderer>().material.color = Color.yellow;
+        else
+            GetComponent<Renderer>().material.color = Color.black;
+        markedForRelease = true;
+        releaseTime = Time.time + deathDuration;
+    }
 
     /*********************/
     /*  Autres méthodes  */
@@ -130,7 +147,7 @@ public class Bullet : MonoBehaviour {
                                                                 // On sort une animation jolie
                 Debug.Log("Touché !");                          // En attendant une animation
                 initialized = false;                            // Reset l'initialisation
-                BulletFactory.ReleaseBullet(this);              // On indique que ce Bullet est désormais disponible
+                markForRelease(true);                           // On indique que ce Bullet est désormais disponible
             }
         }
     }
