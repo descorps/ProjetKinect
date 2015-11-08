@@ -192,17 +192,18 @@ public class GameManager : MonoBehaviour {
             // Condition de fin
             if (life <= 0)
                 displayScoreLimitedLife();
-        }
-        else if (currentMode == Mode.TimeLimited) {
-            // Condition de fin
-            if (Time.time > timeEndGame)
-                displayScoreLimitedLife();
 
             // Condition de passage de niveau
             if (Time.time > timeEndGame) {
                 nextLevel();
                 timeEndGame += limitedTimeDuration; // Pour le prochain passage de niveau
             }
+        }
+        else if (currentMode == Mode.TimeLimited) {
+            // Condition de fin
+            if (Time.time > timeEndGame)
+                displayScoreLimitedLife();
+
         }
 
         if(Input.GetKey(KeyCode.Escape))
