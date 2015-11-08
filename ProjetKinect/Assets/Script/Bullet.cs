@@ -103,8 +103,10 @@ public class Bullet : MonoBehaviour {
                 }
             }
             else {                                                          // Si le Bullet est en train de mourir
-                if (Time.time > releaseTime)                                // Si la durée de disparition est atteinte
+                if (Time.time > releaseTime) {                              // Si la durée de disparition est atteinte
+                    markedForRelease = false;
                     BulletFactory.ReleaseBullet(this);                      // On libère la Bullet pour usage futur
+                }
             }
         }
     }
