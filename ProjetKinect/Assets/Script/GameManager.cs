@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using System;
 using System.Collections;
 
 
@@ -6,8 +8,7 @@ using System.Collections;
  */
 
 public class GameManager : MonoBehaviour {
-
-
+    
     /***********************/
     /*  Gestion singleton  */
     /***********************/
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour {
     /******************/
 
     public enum Mode {                          /** Modes de fonctionnement de l'application */
-        Init, Menu, TimeLimited, LifeLimited, Quit
+        Init, Menu, TimeLimited, LifeLimited, Score, HighScore, Quit
     }
 
 
@@ -158,7 +159,7 @@ public class GameManager : MonoBehaviour {
             // Spawn des trucs
             float t = Time.time;
             if (t > nextBulletTime) {
-                int side = (int) Random.Range(0, 3f + 3f * bonusRatio);
+                int side = (int) UnityEngine.Random.Range(0, 3f + 3f * bonusRatio);
                 Bullet bullet = BulletFactory.getBullet();
                 switch (side) {
                     case 0:
@@ -174,7 +175,7 @@ public class GameManager : MonoBehaviour {
                         bullet.init(KinectManager.Direction.Up);
                         break;
                     default:
-                        float typeBonus = Random.Range(0.0f, 1.0f);
+                        float typeBonus = UnityEngine.Random.Range(0.0f, 1.0f);
                         if (typeBonus > 0.5) {
                             bullet.Position = upStartPosition;
                             bullet.init(KinectManager.Direction.BonusUp);
@@ -185,29 +186,28 @@ public class GameManager : MonoBehaviour {
                         }
                         break;
                 }
-                nextBulletTime = t + Random.Range(minDeltaTimeBetweenTwoBullet, maxDeltaTimeBetweenTwoBullet);
+                nextBulletTime = t + UnityEngine.Random.Range(minDeltaTimeBetweenTwoBullet, maxDeltaTimeBetweenTwoBullet);
             }
         }
-        if (currentMode == Mode.LifeLimited) {
+        if (currentMode == Mode.LifeLimited)
+        {
             // Condition de fin
             if (life <= 0)
                 displayScoreLimitedLife();
-        }
-        else if (currentMode == Mode.TimeLimited) {
-            // Condition de fin
-            if (Time.time > timeEndGame)
-                displayScoreLimitedLife();
 
             // Condition de passage de niveau
-            if (Time.time > timeEndGame) {
+            if (Time.time > timeEndGame)
+            {
                 nextLevel();
                 timeEndGame += limitedTimeDuration; // Pour le prochain passage de niveau
             }
-        }
 
-        if(Input.GetKey(KeyCode.Escape))
+        }
+        else if (currentMode == Mode.TimeLimited)
         {
-            GoBackToMenu();
+            // Condition de fin
+            if (Time.time > timeEndGame)
+                displayScoreLimitedTime();
         }
     }
 
@@ -291,23 +291,16 @@ public class GameManager : MonoBehaviour {
 
     public void displayScoreLimitedLife()
     {
-        Time.timeScale = 0;
-        Debug.Log(score);
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            GoBackToMenu();
-            Time.timeScale = 1;
-        }
-        //bouton
+        Application.LoadLevel("Score");
+        GameObject.Find("TextScore").GetComponent<Text>().text = "Score :" + Environment.NewLine + getCurrentTime() + " points";
+        currentMode = Mode.Score;
     }
 
     public void displayScoreLimitedTime()
     {
-        Time.timeScale = 0;
-        Debug.Log(score);
-        if (Input.GetKey(KeyCode.Escape))
-            GoBackToMenu();
-        //boutonsss
+        Application.LoadLevel("Score");
+        GameObject.Find("TextScore").GetComponent<Text>().text = "Score :" + Environment.NewLine + getCurrentTime() + " points";
+        currentMode = Mode.Score;
     }
 
     /*********************/
