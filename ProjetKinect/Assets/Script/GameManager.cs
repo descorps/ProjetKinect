@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour {
             // Spawn des trucs
             float t = Time.time;
             if (t > nextBulletTime) {
-                int side = (int) Random.Range(0, 3f + 3 * bonusRatio);
+                int side = (int) Random.Range(0, 3f + 3f * bonusRatio);
                 Bullet bullet = BulletFactory.getBullet();
                 switch (side) {
                     case 0:
@@ -175,7 +175,6 @@ public class GameManager : MonoBehaviour {
                         break;
                     default:
                         float typeBonus = Random.Range(0.0f, 1.0f);
-                        Debug.Log(typeBonus);
                         if (typeBonus > 0.5) {
                             bullet.Position = upStartPosition;
                             bullet.init(KinectManager.Direction.BonusUp);
@@ -192,12 +191,12 @@ public class GameManager : MonoBehaviour {
         if (currentMode == Mode.LifeLimited) {
             // Condition de fin
             if (life <= 0)
-                GoBackToMenu();
+                displayScoreLimitedLife();
         }
         else if (currentMode == Mode.TimeLimited) {
             // Condition de fin
             if (Time.time > timeEndGame)
-                GoBackToMenu();
+                displayScoreLimitedLife();
 
             // Condition de passage de niveau
             if (Time.time > timeEndGame) {
@@ -288,6 +287,27 @@ public class GameManager : MonoBehaviour {
     public void GoBackToMenu() {
         Application.LoadLevel("MainMenu");
         currentMode = Mode.Menu;
+    }
+
+    public void displayScoreLimitedLife()
+    {
+        Time.timeScale = 0;
+        Debug.Log(score);
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            GoBackToMenu();
+            Time.timeScale = 1;
+        }
+        //bouton
+    }
+
+    public void displayScoreLimitedTime()
+    {
+        Time.timeScale = 0;
+        Debug.Log(score);
+        if (Input.GetKey(KeyCode.Escape))
+            GoBackToMenu();
+        //boutonsss
     }
 
     /*********************/

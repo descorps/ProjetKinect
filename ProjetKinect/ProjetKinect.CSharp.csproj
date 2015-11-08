@@ -74,6 +74,7 @@
     <Compile Include="Assets\Script\BulletFactory.cs" />
     <Compile Include="Assets\Script\DontDestroyOnNewScene.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
+    <Compile Include="Assets\Script\HighScore.cs" />
     <Compile Include="Assets\Script\KinectManager.cs" />
     <Compile Include="Assets\Script\KinectModelControllers\KinectModelControllerV2.cs" />
     <Compile Include="Assets\Script\KinectModelControllers\KinectPointController.cs" />
