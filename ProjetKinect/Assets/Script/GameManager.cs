@@ -203,6 +203,8 @@ public class GameManager : MonoBehaviour {
             {
                 score = (int)getCurrentTime();
                 HighScore.Instance.postLimitedLife(score);
+                while (difficultylvl > 1)
+                    lastLevel();
                 displayScoreLimitedLife();
             }
 
@@ -222,6 +224,8 @@ public class GameManager : MonoBehaviour {
             if (Time.time > timeEndGame)
             {
                 HighScore.Instance.postLimitedTime(score);
+                while (difficultylvl > 1)
+                    lastLevel();
                 displayScoreLimitedTime();
             }
         }
@@ -308,6 +312,13 @@ public class GameManager : MonoBehaviour {
         Bullet.modifySpeed(1f + coefDifficulty);
     }
 
+    public void lastLevel() {
+        difficultylvl--;
+        // Effets peut être à modifier
+        minDeltaTimeBetweenTwoBullet /= 1f - coefDifficulty;
+        maxDeltaTimeBetweenTwoBullet /= 1f - coefDifficulty;
+        Bullet.modifySpeed(1f / (1f + coefDifficulty));
+    }
 
     /** \brief Fonction déclenchant un retour au menu */
     public void GoBackToMenu() {
