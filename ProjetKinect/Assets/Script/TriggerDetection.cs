@@ -7,50 +7,51 @@ public class TriggerDetection : MonoBehaviour {
     private GameManager.Mode modeName;
     [SerializeField]
     private string modeKey;
+    [SerializeField]
+    private Color selectedColor = Color.yellow;
+    [SerializeField]
+    private Color unselectedColor = Color.white;
 
-    private bool inBox;
     private float chrono;
-
     private MeshRenderer rendBox;
-    
-  
-    void OnTriggerEnter(Collider other)
-    {
-        rendBox.material.color = Color.blue;
-        inBox = true;
-    }
 
-    void OnTriggerExit(Collider other)
-    {
-        rendBox.material.color = Color.white;
-        inBox = false;
-        chrono = 0;
-    }
-    
-    void Start ()
+    void Start()
     {
         rendBox = gameObject.GetComponent<MeshRenderer>();
-        rendBox.material.color = Color.white;
+        rendBox.material.color = unselectedColor;
     }
-	
+
+    void selectionStart()
+    {
+        rendBox.material.color = selectedColor;
+        chrono += Time.deltaTime;
+    }
+    void selectionEnd()
+    {
+        rendBox.material.color = unselectedColor;
+        chrono = 0;
+    }
+
+    void OnTrigger(Collider other)
+    {
+        selectionStart();
+    }
+    void OnTriggerExit(Collider other)
+    {
+        selectionEnd();
+    }
+    
 
 	void Update ()
     {
         if(Input.GetKey(modeKey)) 
         {
-            rendBox.material.color = Color.blue;
-            chrono += Time.deltaTime;
+            selectionStart();
         }
 
         if (Input.GetKeyUp(modeKey))
         {
-            rendBox.material.color = Color.white;
-            chrono = 0;
-        }
-
-        if (inBox)
-        {
-            chrono += Time.deltaTime;
+            selectionEnd();
         }
 
         if (chrono > 2)
