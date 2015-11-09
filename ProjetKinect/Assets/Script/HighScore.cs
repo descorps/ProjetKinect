@@ -3,8 +3,7 @@ using System.Collections;
 using System.IO;
 
 public class HighScore : MonoBehaviour {
-
-
+    
     /***********************/
     /*  Gestion singleton  */
     /***********************/
@@ -35,8 +34,8 @@ public class HighScore : MonoBehaviour {
     /*  Variables de gestion interne  */
     /**********************************/
 
-    int[] scoresLimitedLife = new int[10];  /** Tableau des highscores pour le mode vie limitée */
-    int[] scoresLimitedTime = new int[10];  /** Tableau des highscores pour le mode temps limité /
+    int[] scoresLimitedLife = new int[5];  /** Tableau des highscores pour le mode vie limitée */
+    int[] scoresLimitedTime = new int[5];  /** Tableau des highscores pour le mode temps limité /
 
 
 
@@ -47,7 +46,7 @@ public class HighScore : MonoBehaviour {
     // Initialise et charge les scores
     void Start() {
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 5; i++)
         {
             scoresLimitedLife[i] = 0;
             scoresLimitedTime[i] = 0;
@@ -58,10 +57,10 @@ public class HighScore : MonoBehaviour {
         if (File.Exists(scoresFilePath)) {
             string[] content = File.ReadAllLines(scoresFilePath);
             foreach (string l in content) {
-                if (j < 10)
+                if (j < 5)
                     scoresLimitedLife[j] = int.Parse(l);
-                else if (j < 20)
-                    scoresLimitedTime[j - 10] = int.Parse(l);
+                else if (j < 10)
+                    scoresLimitedTime[j - 5] = int.Parse(l);
                 j++;
             }
         }
@@ -71,11 +70,11 @@ public class HighScore : MonoBehaviour {
     void OnDestroy() {
         if (File.Exists(scoresFilePath))
             File.Delete(scoresFilePath);
-        string[] content = new string[20];
-        for (int i = 0; i < 10; i++)
+        string[] content = new string[10];
+        for (int i = 0; i < 5; i++)
             content[i] = scoresLimitedLife[i].ToString();
-        for (int i = 0; i < 10; i++)
-            content[i + 10] = scoresLimitedTime[i].ToString();
+        for (int i = 0; i < 5; i++)
+            content[i + 5] = scoresLimitedTime[i].ToString();
         File.WriteAllLines(scoresFilePath, content);
     }
 
@@ -89,8 +88,8 @@ public class HighScore : MonoBehaviour {
      *  Cette fonction mémorise le score si celui-ci figure au top 10 des meilleurs scores jamais effectués
      */
     public void postLimitedLife(int score) {
-        if (score > scoresLimitedLife[9]) {                 // Si le score mérite d'être sauvegardé
-            for (int i = 8; i >= 0; i--) {                  // Pour chaque score existant
+        if (score > scoresLimitedLife[4]) {                 // Si le score mérite d'être sauvegardé
+            for (int i = 3; i >= 0; i--) {                  // Pour chaque score existant
                 if (score > scoresLimitedLife[i])           // Si le nouveau score est meilleur alors on recul d'un cran pour lui faire de la place
                     scoresLimitedLife[i + 1] = scoresLimitedLife[i];
                 else {                                      // Sinon on place le nouveau score au cran d'avant et on arrête
@@ -107,8 +106,8 @@ public class HighScore : MonoBehaviour {
      *  Cette fonction mémorise le score si celui-ci figure au top 10 des meilleurs scores jamais effectués
      */
     public void postLimitedTime(int score) {
-        if (score > scoresLimitedTime[9]) {                // Si le score mérite d'être sauvegardé
-            for (int i = 8; i >= 0; i--) {      // Pour chaque score existant
+        if (score > scoresLimitedTime[4]) {                // Si le score mérite d'être sauvegardé
+            for (int i = 3; i >= 0; i--) {      // Pour chaque score existant
                 if (score > scoresLimitedTime[i])          // Si le nouveau score est meilleur alors on recul d'un cran pour lui faire de la place
                     scoresLimitedTime[i + 1] = scoresLimitedTime[i];
                 else {                          // Sinon on place le nouveau score au cran d'avant et on arrête
