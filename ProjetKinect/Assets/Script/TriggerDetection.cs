@@ -4,13 +4,13 @@ using System.Collections;
 public class TriggerDetection : MonoBehaviour {
 
     [SerializeField]
-    private GameManager.Mode modeName;
+    private GameManager.Mode modeName; // nom du mode correspondant au bouton
     [SerializeField]
-    private string modeKey;
+    private string modeKey; // touche correspondant au bouton
     [SerializeField]
-    private Color selectedColor = Color.yellow;
+    private Color selectedColor = Color.yellow; // couleur lorsque le bouton est sélectionné
     [SerializeField]
-    private Color unselectedColor = Color.white;
+    private Color unselectedColor = Color.white; // couleur lorsque le bouton n'est pas sélectionné
 
     private float chrono;
     private MeshRenderer rendBox;
@@ -21,21 +21,29 @@ public class TriggerDetection : MonoBehaviour {
         rendBox.material.color = unselectedColor;
     }
 
-    void selectionStart()
+    /** \brief Ce qu'il se passe quand on est en cours de sélection du bouton
+     */
+    void selection()
     {
         rendBox.material.color = selectedColor;
         chrono += Time.deltaTime;
     }
+    /** \brief Ce qu'il se passe lorsqu'on sort de la zone de sélection du bouton
+     */
     void selectionEnd()
     {
         rendBox.material.color = unselectedColor;
         chrono = 0;
     }
 
+    /** \brief Lorsqu'une main est en collision avec le collider du bouton
+     */
     void OnTrigger(Collider other)
     {
-        selectionStart();
+        selection();
     }
+    /** \brief Lorsqu'une main sort de la collision avec le collider du bouton
+     */
     void OnTriggerExit(Collider other)
     {
         selectionEnd();
@@ -44,17 +52,17 @@ public class TriggerDetection : MonoBehaviour {
 
 	void Update ()
     {
-        if(Input.GetKey(modeKey)) 
+        if(Input.GetKey(modeKey)) // Lorsque la touche correspondante au bouton est pressée
         {
-            selectionStart();
+            selection();
         }
 
-        if (Input.GetKeyUp(modeKey))
+        if (Input.GetKeyUp(modeKey)) // Lorsque la touche correspondante au bouton est lachée
         {
             selectionEnd();
         }
 
-        if (chrono > 2)
+        if (chrono > 2) // Lorsque le bouton est sélectionné pendant 2 secondes, on appelle la fonction correspondante au bouton
         {
             if (modeName == GameManager.Mode.TimeLimited)
                 GameManager.Instance.runLimitedTime();
