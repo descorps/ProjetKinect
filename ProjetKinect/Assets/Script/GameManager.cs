@@ -152,6 +152,7 @@ public class GameManager : MonoBehaviour {
         KinectManager.Instance.onPlayerMovementLeftEvent += displayTextLeft;
         KinectManager.Instance.onPlayerMovementUpEvent += displayTextUp;
 
+        difficultylvl = 1;
     }
 
 
@@ -281,6 +282,7 @@ public class GameManager : MonoBehaviour {
     /** \brief Fonction lançant le jeu en mode temps limité
      */
     public void runLimitedTime() {
+        difficultylvl = 1;
         score = 0;
         timeBeginGame = Time.time;
         timeEndGame = Time.time + limitedTimeDuration;
