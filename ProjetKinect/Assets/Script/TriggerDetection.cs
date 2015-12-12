@@ -38,7 +38,7 @@ public class TriggerDetection : MonoBehaviour {
 
     /** \brief Lorsqu'une main est en collision avec le collider du bouton
      */
-    void OnTrigger(Collider other)
+    void OnTriggerStay(Collider other)
     {
         selection();
     }
